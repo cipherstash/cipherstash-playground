@@ -1,0 +1,5 @@
+instances:
+  - openmetrics_endpoint: http://172.17.0.1:9930/metrics
+    namespace: cipherstash_proxy
+    metrics:
+      - "pgcat.*"

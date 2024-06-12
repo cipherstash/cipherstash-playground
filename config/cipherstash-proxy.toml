@@ -1,0 +1,17 @@
+# 1Password Note: https://start.1password.com/open/i?a=AFWDMIH5XZEWFO3UK2SCEHJ7PM&v=pi3uy4ixjsqfpnzuwmnhxqmuam&i=v2pxjqmogo4nwcbu5ahtgdpcze&h=cipherstash.1password.com
+
+## Comment out the following lines to enable the CipherStash Audit
+# workspace_id = "..."
+# client_access_key = "..."
+
+# [audit]
+# subscriber = "cipherstash"
+
+prometheus_metrics = true
+
+[database]
+name = "postgres"
+port = 6543
+host = "aws-0-us-west-1.pooler.supabase.com"
+username = "postgres.exzqhmbolvxxehfjhpus"
+password = "..."

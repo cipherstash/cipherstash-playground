@@ -1,0 +1,16 @@
+{
+  "name": "demo",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@types/pg": "^8.11.6",
+    "elysia": "^1.0.23",
+    "pg": "^8.12.0"
+  }
+}
