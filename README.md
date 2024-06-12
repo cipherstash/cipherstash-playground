@@ -5,6 +5,7 @@ This is a playground for the CipherStash Proxy. It is a collection of microservi
 ## Getting Started
 
 To get started, you will need to have Docker installed on your machine. You can download Docker from [here](https://www.docker.com/products/docker-desktop).
+Configure the Proxy config file located at `config/cipherstash-proxy.toml` to your desired configuration.
 
 Once you have Docker installed, you can run the following command to start the playground:
 
