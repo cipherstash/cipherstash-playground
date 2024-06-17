@@ -10,21 +10,12 @@ const client = new Client({
   database: process.env.PG_DATABASE,
 })
 
-const connect = async () => {
-  try {
-    await client.connect()
-    console.log('Connected to Postgres')
-  }
-  catch (err) {
-    // console.log(err)
-  }
-}
+await client.connect()
 
 const app = new Elysia()
 	.get('/', async () => {
     console.log('GET /')
     try {
-      await connect()
       const res = await client.query('SELECT * FROM users;');
       return res.rows
     }
@@ -33,9 +24,6 @@ const app = new Elysia()
       return err
     }
   })
-	.listen({
-    port: 8080,
-    // host: 0.0.0.0,
-  })
+	.listen(8080)
 
-console.log(`🦊 Elysia is running at on port ${app.server?.port}...`)
+console.log(`Demo API running at on port ${app.server?.port}...`)

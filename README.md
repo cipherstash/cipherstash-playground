@@ -21,10 +21,11 @@ This will start the following services:
 - Prometheus
 - Loki
 - Promtail
+- Postgres
 
 You can access the following services:
 
-- CipherStash Proxy: postgres://[username]:[password]@localhost:6432/postgres
+- CipherStash Proxy: postgres://postgres:password@localhost:6432/postgres
 - Grafana: http://localhost:3000
   - Grafana Username: admin
   - Grafana Password: admin

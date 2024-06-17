@@ -38,7 +38,7 @@
       },
       "id": 3,
       "panels": [],
-      "title": "Into and data access events",
+      "title": "Data Access Events",
       "type": "row"
     },
     {
@@ -55,14 +55,14 @@
       "id": 2,
       "options": {
         "code": {
-          "language": "plaintext",
+          "language": "markdown",
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "## Log Collection Process\n1. **Log Entries**: Data access events are logged and collected by Promtail.\n2. **Loki Storage**: These logs are then sent to Loki, where they are stored and can be queried.\n3. **Log Details**: Each log entry can be selected to view detailed information about the data access event.\n\n## Streaming Logs to CipherStash Cloud\n\n### Benefits of CipherStash Audit\n- **Enhanced Filtering**: Easily filter logs to find relevant data access events.\n- **Advanced Sorting**: Sort logs based on various criteria for better analysis.\n- **Anomaly Detection**: Automatically detect and flag unusual data access patterns.\n\n### Configuration Steps\n1. **Generate an API Key**: \n   - [Create a CipherStash account](https://cipherstash.com/signup).\n   - Navigate to the API section and generate a new API key.\n   \n2. **Update Proxy Configuration**:\n   - Locate your proxy configuration file.\n   - Add the generated API key to the configuration file.\n   - Ensure the proxy is set to forward logs to CipherStash Cloud.\n\n3. **Immediate Data Collection**:\n   - Once the proxy configuration is updated, logs will be streamed to CipherStash Cloud immediately.\n   - You can now utilize CipherStash Cloud’s tools for filtering, sorting, and anomaly detection.",
+        "content": "![Logo](https://cipherstash.com/Logo-Landscape-White-on-Black.jpg)\n\nView all your data access events in the right hand panel. These logs are collected from `stdout` of the proxy container.\n\n## CipherStash Audit\n\nYou can ship these access events to CipherStash for analysis and anamoly detection. To enable this feature, you need to create an account on [CipherStash](https://cipherstash.com/signup) and get an API key, then add the following config to the `cipherstash-proxy.toml` file.\n\n```toml\nworkspace_id = \"...\"\nclient_access_key = \"...\"\n\n[audit]\nsubscriber = \"cipherstash\"\n```",
         "mode": "markdown"
       },
-      "pluginVersion": "10.1.4",
+      "pluginVersion": "11.0.0",
       "title": "CipherStash Proxy",
       "type": "text"
     },
@@ -94,8 +94,8 @@
             "type": "loki",
             "uid": "loki"
           },
-          "editorMode": "code",
-          "expr": "{job=\"proxylogs\"} |= `DataAccessLog` | pattern `<_> <_> <_> { id: <id>, workspace_id: \"<workspaceId>\", statement_id: <statementId>, rows_accessed: <rowsAccessed>, columns_accessed: <columnsAccessed>, created_at: <timestamp> <_>>`\n",
+          "editorMode": "builder",
+          "expr": "{logstream=\"stdout\"} | json",
           "queryType": "range",
           "refId": "A"
         }
@@ -113,7 +113,7 @@
       },
       "id": 4,
       "panels": [],
-      "title": "CipherStash Proxy metrics",
+      "title": "CipherStash Proxy Prometheus Metrics",
       "type": "row"
     },
     {
@@ -127,6 +127,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -189,6 +190,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -259,9 +261,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.4",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -328,9 +332,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.1.4",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
@@ -362,6 +368,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -425,6 +432,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -460,6 +468,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -523,6 +532,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -549,8 +559,7 @@
     }
   ],
   "refresh": "",
-  "schemaVersion": 38,
-  "style": "dark",
+  "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": []
@@ -559,6 +568,7 @@
     "from": "now-30m",
     "to": "now"
   },
+  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {},
   "timezone": "",
   "title": "CipherStash Proxy",
