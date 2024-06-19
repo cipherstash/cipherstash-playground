@@ -17,7 +17,7 @@ This will start the following services as individual containers utilizing a shar
 
 - **CipherStash Proxy** - a proxy that sits between your application and your database to monitor and secure your data
 - **PostgreSQL** - a database that stores dummy data
-- **Javascript application** - very light weight application that demonstrates how to use the CipherStash Proxy
+- **JavaScript application** - very light weight application that demonstrates how to use the CipherStash Proxy
 - **Grafana** - used for visualizing metrics and logs
 - **Prometheus** - used for monitoring
 - **Loki** - used for log aggregation
@@ -29,7 +29,7 @@ You can access the following services at the following endpoints:
 
 - CipherStash Proxy: `postgres://postgres:password@localhost:6432/postgres`
 - PostgreSQL: `postgres://postgres:password@localhost:5432/postgres`
-- [Javascript application](http://localhost:8080)
+- [JavaScript application](http://localhost:8080)
   - The application responds to GET requests at `/` and triggers a data access event by executing a query against the database.
 - [Grafana](http://localhost:3000)
 
@@ -40,9 +40,9 @@ The playground comes with a pre-configured Grafana dashboard that shows the foll
 - Data access events which are logged to Loki
 - Various metrics from the CipherStash Proxy
 
-## Javascript application
+## JavaScript application
 
-The Javascript application is a very simple application that demonstrates how to use the CipherStash Proxy.
+The JavaScript application is a very simple application that demonstrates how to use the CipherStash Proxy.
 It is a simple HTTP server that responds to GET requests at `/` and triggers a data access event by executing a query against the database.
 
 ```sql
