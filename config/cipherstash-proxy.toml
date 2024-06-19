@@ -3,10 +3,10 @@
 # workspace_id = "..."
 # client_access_key = "..."
 
+prometheus_metrics = true
+
 # [audit]
 # subscriber = "cipherstash"
-
-prometheus_metrics = true
 
 [database]
 name = "postgres"
