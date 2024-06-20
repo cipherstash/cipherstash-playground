@@ -1,23 +1,23 @@
 # CipherStash Proxy Playground
 
-This is a playground for the CipherStash Proxy. It is a collection of microservices that demonstrate how to use the CipherStash Proxy to monitor and secure your data in a PostgreSQL database.
+This is a playground for CipherStash Proxy. It is a collection of microservices that demonstrates how to use CipherStash Proxy to monitor and secure your data in a PostgreSQL database.
 
 ## Getting started
 
-To get started, you will need to have Docker installed on your machine. You can download Docker from [here](https://www.docker.com/products/docker-desktop).
+Make sure that you have Docker installed on your machine. You can download Docker from [here](https://www.docker.com/products/docker-desktop).
 Configure the Proxy config file located at `config/cipherstash-proxy.toml` to your desired configuration, noting that the default configuration is already set up to work with the other services in the playground.
 
-Once you have Docker installed, you can run the following command to start the playground:
+Once you have Docker installed, run the following command to start the playground:
 
 ```bash
 docker compose up
 ```
 
-This will start the following services as individual containers utilizing a shared network, and mapping the necessary ports to your local machine:
+This will start the following services as individual containers using a shared network, and mapping the necessary ports to your local machine:
 
 - **CipherStash Proxy** - a proxy that sits between your application and your database to monitor and secure your data
 - **PostgreSQL** - a database that stores dummy data
-- **JavaScript application** - very light weight application that demonstrates how to use the CipherStash Proxy
+- **JavaScript application** - very light weight application that demonstrates how to use CipherStash Proxy
 - **Grafana** - used for visualizing metrics and logs
 - **Prometheus** - used for monitoring
 - **Loki** - used for log aggregation
@@ -25,7 +25,7 @@ This will start the following services as individual containers utilizing a shar
 
 ### Accessing the services
 
-You can access the following services at the following endpoints:
+Access the services at the following endpoints:
 
 - CipherStash Proxy: `postgres://postgres:password@localhost:6432/postgres`
 - PostgreSQL: `postgres://postgres:password@localhost:5432/postgres`
@@ -49,7 +49,7 @@ It is a simple HTTP server that responds to GET requests at `/` and triggers a d
 SELECT * FROM users;
 ```
 
-Note the application is configured to connect to Postgres, just like any other application would, but instead of connecting directly to the database, it connects to the CipherStash Proxy.
+The application is configured to connect to Postgres, just like any other application would, but instead of connecting directly to the database, it connects to CipherStash Proxy.
 
 ```javascript
 const client = new Client({
@@ -63,11 +63,11 @@ const client = new Client({
 
 ## CipherStash Proxy
 
-You can read more about the CipherStash Proxy in the [official documentation](https://cipherstash.com/docs/reference/proxy).
+You can read more about CipherStash Proxy in the [official documentation](https://cipherstash.com/docs/reference/proxy).
 
 ### Data access events
 
-The CipherStash Proxy produces unique logs to `stdout` for each data access event.
+CipherStash Proxy produces unique logs to `stdout` for each data access event.
 These logs are then collected by Promtail and sent to Loki for storage.
 You can view these logs in Grafana.
 The logs contain the following information:
@@ -83,14 +83,14 @@ CipherStash Proxy also logs `statement_received` and `statement_completed` event
 
 ### Metrics
 
-The CipherStash Proxy exposes metrics in Prometheus format at `http://localhost:9930/metrics`.
-Some of these metrics can be visualized in Grafana as an example of how you can monitor the CipherStash Proxy.
+CipherStash Proxy exposes metrics in Prometheus format at `http://localhost:9930/metrics`.
+Some of these metrics can be visualized in Grafana as an example of how you can monitor CipherStash Proxy.
 
 ## Adding your own application
 
-You can add your own application to the playground by adding a new service to the `docker-compose.yml` file, and configuring it to connect to the CipherStash Proxy.
+You can add your own application to the playground by adding a new service to the `docker-compose.yml` file, and configuring it to connect to CipherStash Proxy.
 
-For example, if you have an application that connects to a PostgreSQL database with a connection string defined by an environment variable `DATABASE_URL`, you can configure it to connect to the CipherStash Proxy by changing the `DATABASE_URL` value to route through the CipherStash Proxy.
+For example, if you have an application that connects to a PostgreSQL database with a connection string defined by an environment variable `DATABASE_URL`, you can configure it to connect to CipherStash Proxy by changing the `DATABASE_URL` value to route through CipherStash Proxy.
 
 ```yaml
 my-application:
@@ -103,7 +103,7 @@ my-application:
 
 ### Connecting to your own database
 
-You will need to configure the CipherStash Proxy by editing the `config/cipherstash-proxy.toml` file, and updating the `[database]` section with the connection details for your database.
+Configure CipherStash Proxy by editing the `config/cipherstash-proxy.toml` file, and updating the `[database]` section with the connection details for your database.
 
 ```toml
 [database]
