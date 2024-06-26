@@ -132,3 +132,12 @@ docker compose down
 ```
 
 This will stop and remove all containers, networks, and volumes created by the playground.
+
+
+
+
+### Testing
+
+The playground includes [Toxiproxy](https://github.com/Shopify/toxiproxy), a framework for simulating network conditions.
+
+
