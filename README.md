@@ -123,6 +123,14 @@ docker compose down
 docker compose up --build
 ```
 
+## Simulating network conditions
+
+The playground includes [Toxiproxy](https://github.com/Shopify/toxiproxy), a framework for simulating network conditions.
+You can use Toxiproxy to simulate network latency, packet loss, and other network conditions.
+
+CipherStash Proxy is a PostgreSQL pooler and introducting it into your stack can introduce new network conditions that you may not have experienced before.
+Toxiproxy can help you simulate these conditions and test how your application behaves.
+
 ## Cleaning up
 
 To stop the playground and remove all containers, run the following command:
@@ -132,12 +140,3 @@ docker compose down
 ```
 
 This will stop and remove all containers, networks, and volumes created by the playground.
-
-
-
-
-### Testing
-
-The playground includes [Toxiproxy](https://github.com/Shopify/toxiproxy), a framework for simulating network conditions.
-
-
