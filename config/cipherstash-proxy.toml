@@ -5,8 +5,8 @@
 
 prometheus_metrics = true
 
-# [audit]
-# subscriber = "cipherstash"
+[audit]
+subscriber = "stdout"
 
 [database]
 name = "postgres"

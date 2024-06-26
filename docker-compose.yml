@@ -5,9 +5,9 @@ services:
       - 9930:9930
     volumes:
       - ./config/cipherstash-proxy.toml:/etc/cipherstash-proxy/cipherstash-proxy.toml
-    image: cipherstash/cipherstash-proxy:cipherstash-proxy-v0.0.13
     environment:
       - LOG_LEVEL=debug
+    image: cipherstash/cipherstash-proxy:cipherstash-proxy-v0.0.15
     labels:
       logging: "promtail"
       logging_jobname: "proxylogs"
