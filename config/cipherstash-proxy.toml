@@ -1,26 +1,19 @@
-## Sign up for an account to create an access key: https://dashboard.cipherstash.com
+## For a complete list of configuration options, see the documentation at https://cipherstash.com/docs/reference/proxy
 
+## Sign up for an account to create an access key: https://dashboard.cipherstash.com
 # workspace_id = "..."
 # client_access_key = "..."
 
 prometheus_metrics = true
 
 [audit]
+## If you have a workspace_id and client_access_key, set subscriber to "cipherstash" to enable Audit.
 subscriber = "stdout"
 
 [database]
 name = "postgres"
 username = "postgres"
 password = "password"
-
-# postrgres host & port
-# host = "db"
-# port = 5432
-
-# toxiproxy host & port
-# enable this to direct traffic through toxiproxy
-host = "toxiproxy"
-port = 5433
-
-[audit]
-subscriber = "cipherstash"
+## This playground ships with a ToxiProxy instance. Set host to "toxiproxy" and port to 5433 to enable it.
+host = "db"
+port = 5432
