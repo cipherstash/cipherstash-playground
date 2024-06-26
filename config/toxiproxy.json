@@ -1,0 +1,8 @@
+[
+    {
+        "name": "pg",
+        "listen": "[::]:5433",
+        "upstream": "db:5432",
+        "enabled": true
+    }
+]

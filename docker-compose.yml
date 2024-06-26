@@ -10,6 +10,7 @@ services:
       logging: "promtail"
       logging_jobname: "proxylogs"
     depends_on:
+      - toxiproxy
       - db
     networks:
       - app
@@ -34,6 +35,20 @@ services:
     ports:
       - 3100:3100
     command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - app
+
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:latest
+    environment:
+      - LOG_LEVEL=DEBUG
+    ports:
+      - 5433:5433
+      - 8474:8474
+    volumes:
+      - ./config/toxiproxy.json:/toxiproxy.json
+    depends_on:
+      - db
     networks:
       - app
 

@@ -10,7 +10,17 @@ prometheus_metrics = true
 
 [database]
 name = "postgres"
-port = 5432
-host = "db"
 username = "postgres"
 password = "password"
+
+# postrgres host & port
+# host = "db"
+# port = 5432
+
+# toxiproxy host & port
+# enable this to direct traffic through toxiproxy
+host = "toxiproxy"
+port = 5433
+
+[audit]
+subscriber = "cipherstash"
