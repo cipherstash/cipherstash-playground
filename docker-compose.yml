@@ -6,6 +6,8 @@ services:
     volumes:
       - ./config/cipherstash-proxy.toml:/etc/cipherstash-proxy/cipherstash-proxy.toml
     image: cipherstash/cipherstash-proxy:cipherstash-proxy-v0.0.13
+    environment:
+      - LOG_LEVEL=debug
     labels:
       logging: "promtail"
       logging_jobname: "proxylogs"
@@ -40,8 +42,9 @@ services:
 
   toxiproxy:
     image: ghcr.io/shopify/toxiproxy:latest
+    command: -config toxiproxy.json
     environment:
-      - LOG_LEVEL=DEBUG
+      - LOG_LEVEL=info
     ports:
       - 5433:5433
       - 8474:8474
