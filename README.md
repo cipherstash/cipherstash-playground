@@ -123,6 +123,18 @@ docker compose down
 docker compose up --build
 ```
 
+## Using Encrypt
+
+The playground also comes with a PostgreSQL instance that is configured to use CipherStash Encrypt.
+
+- Service name: `db-encrypted`
+- Service port: `5431`
+
+Use the [Getting Started Guide for CipherStash Encrypt](https://cipherstash.com/docs/getting-started/cipherstash-encrypt) to learn how to use CipherStash Encrypt with your application.
+
+This playground handles all the `Adding PostgreSQL dependencies` for you from the guide, so you can skip that step.
+It also has an example `dataset.yml` file defined in the `config/cipherstash-encrypt` directory that you can use to create a dataset for CipherStash Encrypt.
+
 ## Simulating network conditions
 
 The playground includes [Toxiproxy](https://github.com/Shopify/toxiproxy), a framework for simulating network conditions.

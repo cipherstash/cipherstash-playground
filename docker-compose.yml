@@ -7,13 +7,14 @@ services:
       - ./config/cipherstash-proxy.toml:/etc/cipherstash-proxy/cipherstash-proxy.toml
     environment:
       - LOG_LEVEL=debug
-    image: cipherstash/cipherstash-proxy:cipherstash-proxy-v0.0.15
+    image: cipherstash/cipherstash-proxy:cipherstash-proxy-v0.0.16
     labels:
       logging: "promtail"
       logging_jobname: "proxylogs"
     depends_on:
       - toxiproxy
       - db
+      - db-encrypted
     networks:
       - app
 
@@ -88,6 +89,27 @@ services:
       - POSTGRES_DB=postgres
     ports:
       - 5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    networks:
+      - app
+
+  db-encrypted:
+    image: db-encrypted
+    container_name: db-encrypted
+    build:
+      context: ./db-encrypted
+    command: -p 5431
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    ports:
+      - 5431:5431
     healthcheck:
       test: ["CMD", "pg_isready"]
       interval: 1m30s
