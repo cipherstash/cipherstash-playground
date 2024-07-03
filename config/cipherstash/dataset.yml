@@ -3,7 +3,7 @@ tables:
     fields:
       - name: email
         in_place: false
-        mode: plaintext-duplicate
+        mode: encrypted
         cast_type: utf8-str
         indexes:
           - version: 1

@@ -23,9 +23,7 @@ subscriber = "stdout"
 name = "postgres"
 username = "postgres"
 password = "password"
-## This playground ships with a few different database instances.
-## Set host to "db" and port to 5432 to enable the default database.
-## Set host to "db-encrypted" and port to 5431 to enable the encrypted database.
-## Set host to "toxiproxy" and port to 5433 to enable the ToxiProxy instance which uses the default database.
+## Set host to "db" and port to 5432 to enable the database.
+## Set host to "toxiproxy" and port to 5433 to enable ToxiProxy.
 host = "db"
 port = 5432

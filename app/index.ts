@@ -16,7 +16,18 @@ const app = new Elysia()
 	.get('/', async () => {
     console.log('GET /')
     try {
-      const res = await client.query('SELECT * FROM users;');
+      const res = await client.query('SELECT id, name, email FROM users;');
+      return res.rows
+    }
+    catch (err) {
+      console.log(err)
+      return err
+    }
+  })
+  .get('/dan', async () => {
+    console.log('GET /')
+    try {
+      const res = await client.query("SELECT id, name, email FROM users WHERE email LIKE 'dan%';");
       return res.rows
     }
     catch (err) {

@@ -2,6 +2,31 @@
 
 This is a playground for CipherStash Proxy. It is a collection of microservices that demonstrates how to use CipherStash Proxy to monitor and secure your data in a PostgreSQL database.
 
+## Table of Contents
+
+- [Getting started](#getting-started)
+- [Grafana dashboards](#grafana-dashboards)
+- [JavaScript application](#javascript-application)
+- [CipherStash Proxy](#cipherstash-proxy)
+  - [Data access events](#data-access-events)
+  - [Metrics](#metrics)
+- [Adding your own application](#adding-your-own-application)
+  - [Connecting to your own database](#connecting-to-your-own-database)
+  - [Restarting the services](#restarting-the-services)
+- [Using CipherStash Encrypt](#using-cipherstash-encrypt)
+  - [Step 1: Log in to the CipherStash CLI](#step-1-log-in-to-the-cipherstash-cli)
+  - [Step 2: Create a dataset](#step-2-create-a-dataset)
+  - [Step 3: Create a client key](#step-3-create-a-client-key)
+  - [Step 4: Upload the playground dataset configuration](#step-4-upload-the-playground-dataset-configuration)
+  - [Step 5: Update the CipherStash Proxy configuration and restart the services](#step-5-update-the-cipherstash-proxy-configuration-and-restart-the-services)
+  - [Step 6: Encrypting data](#step-6-encrypting-data)
+  - [Step 7: Removing the plaintext data](#step-7-removing-the-plaintext-data)
+  - [Step 8: Enable searchable encryption in use](#step-8-enable-searchable-encryption-in-use)
+    - [Verifying the setup](#verifying-the-setup)
+  - [Enabling CipherStash Encrypt in your own application](#enabling-cipherstash-encrypt-in-your-own-application)
+- [Simulating network conditions](#simulating-network-conditions)
+- [Cleaning up](#cleaning-up)
+
 ## Getting started
 
 Make sure that you have Docker installed on your machine. You can download Docker from [here](https://www.docker.com/products/docker-desktop).
@@ -46,7 +71,7 @@ The JavaScript application is a very simple application that demonstrates how to
 It is a simple HTTP server that responds to GET requests at `/` and triggers a data access event by executing a query against the database.
 
 ```sql
-SELECT * FROM users;
+SELECT id, name, email FROM users;
 ```
 
 The application is configured to connect to Postgres, just like any other application would, but instead of connecting directly to the database, it connects to CipherStash Proxy.
@@ -116,24 +141,221 @@ password = "password"
 
 ### Restarting the services
 
-If you make changes to the `docker-compose.yml` file or any config files, you will need to restart the services by running the following commands:
+If you make changes to the `docker-compose.yml` file or any config files, you will need to restart the services by running the following command:
 
 ```bash
-docker compose down
-docker compose up --build
+docker compose restart
 ```
 
-## Using Encrypt
+## Using CipherStash Encrypt
 
-The playground also comes with a PostgreSQL instance that is configured to use CipherStash Encrypt.
+The playground also includes the Postgres dependencies to use CipherStash Encrypt, a searchable encryption in use solution that allows you to encrypt your data at rest, in transit, and most importanly in use.
 
-- Service name: `db-encrypted`
-- Service port: `5431`
+To use CipherStash Encrypt, you will need to install the [CipherStash CLI](https://cipherstash.com/docs/reference/cli) create a workspace by [creating an account](https://cipherstash.com/signup), [create an access token in the dashboard](https://cipherstash.com/docs/how-to/creating-access-keys), and then follow the steps below.
 
-Use the [Getting Started Guide for CipherStash Encrypt](https://cipherstash.com/docs/getting-started/cipherstash-encrypt) to learn how to use CipherStash Encrypt with your application.
+#### Step 1: Log in to the CipherStash CLI
 
-This playground handles all the `Adding PostgreSQL dependencies` for you from the guide, so you can skip that step.
-It also has an example `dataset.yml` file defined in the `config/cipherstash-encrypt` directory that you can use to create a dataset for CipherStash Encrypt.
+You'll use the CipherStash CLI to define a dataset that will be used to encrypt and decrypt data.
+The dataset will define which database columns should be encrypted and how the data should be indexed.
+Make sure you are logged in to the CipherStash CLI before continuing.
+
+```bash
+stash login
+```
+
+#### Step 2: Create a dataset
+
+Next, you need to create a dataset for tracking what data needs to be encrypted.
+To create your first dataset run the following command:
+
+```bash
+stash datasets create users --description "playground dataset"
+```
+
+The output will look like this:
+
+```text
+Dataset created:
+ID         : <a UUID style ID>
+Name       : users
+Description: playground dataset
+```
+
+Note down the dataset ID, as you'll need it in the next step.
+You can also set a local environment variable to make it easier to use the dataset ID in the next step:
+
+```bash
+export CS_DATASET_ID=<your dataset ID>
+```
+
+#### Step 3: Create a client key
+
+Client keys are used to generate data keys used for encrypting and decrypting data.
+
+To create a client, use the dataset ID from `Step 2: Create a dataset` to create a client (making sure you substitute your own dataset ID, if you didn't set the environment variable):
+
+```bash
+stash clients create --dataset-id $CS_DATASET_ID "playground application"
+```
+
+The output will look like this:
+
+```plain
+Client created:
+Client ID  : <a UUID style ID>
+Name       : playground application
+Description:
+Dataset ID : <your provided dataset ID>
+
+#################################################
+#                                               #
+#  Copy and store these credentials securely.   #
+#                                               #
+#  THIS IS THE LAST TIME YOU WILL SEE THE KEY.  #
+#                                               #
+#################################################
+
+Client ID          : <a UUID style ID>
+
+Client Key [hex]   : <a long hex string>
+```
+
+Note down the client key somewhere safe, like a password vault.
+You can also set local environment variables to make it easier to use the key info in the next steps:
+
+```bash
+export CS_CLIENT_ID=<your client ID>
+export CS_CLIENT_KEY=<your client key>
+```
+
+#### Step 4: Upload the playground dataset configuration
+
+Run the following command to upload the dataset configuration and replace `$CS_CLIENT_ID` and `$CS_CLIENT_KEY` with the client ID and client key from `Step: 3 Create a client key` if you didn't set the environment variables:
+
+```bash
+stash datasets config upload --file config/cipherstash/dataset.yml --client-id $CS_CLIENT_ID --client-key $CS_CLIENT_KEY
+```
+
+#### Step 5: Update the CipherStash Proxy configuration and restart the services
+
+Update the `config/cipherstash/cipherstash-proxy.toml` file to include the access key and client key you created in the previous steps.
+
+It will look like this once you've added the access key and client key:
+
+```toml
+## For a complete list of configuration options, see the documentation at https://cipherstash.com/docs/reference/proxy
+
+## Sign up for an account to create an access key: https://dashboard.cipherstash.com
+workspace_id = "..."
+client_access_key = "..."
+
+prometheus_metrics = true
+
+[encryption]
+mode = "encrypted"
+client_id = "..."
+client_key = "..."
+
+[audit]
+## If you have a workspace_id and client_access_key
+## set subscriber to "cipherstash" to enable Audit.
+subscriber = "cipherstash"
+
+[database]
+name = "postgres"
+username = "postgres"
+password = "password"
+## Set host to "db" and port to 5432 to enable the database.
+## Set host to "toxiproxy" and port to 5433 to enable ToxiProxy.
+host = "db"
+port = 5432
+```
+
+After updating the configuration file, restart the services by running the following commands:
+
+```bash
+docker compose restart
+```
+
+#### Step 6: Encrypting data
+
+CipherStash Proxy comes with a helper program called `albatross` that you can use to encrypt data.
+
+```
+docker compose exec cipherstash-proxy albatross users --columns email --verbose --name postgres --username postgres --password password
+```
+
+This command will encrypt the `email` column in the `users` table.
+
+#### Step 7: Removing the plaintext data
+
+After encrypting the data, you can remove the plaintext data from the database.
+
+```
+docker compose exec db psql -U postgres -d postgres -c "UPDATE users SET email = 'protected';"
+```
+
+Verify that the data has been protected by running the following command:
+
+```
+docker compose exec db psql -U postgres -d postgres -c "SELECT id, name, email FROM users;"
+```
+
+You should see the email column replaced with `protected`.
+
+#### Step 8: Enable searchable encryption in use
+
+Update the `config/cipherstash/dataset.yml` file to enable searchable encryption in use, by changing the mode from `plaintext-duplicate` to `encrypted`.
+
+```yaml
+mode: encrypted
+```
+
+Upload the updated dataset configuration by running the following command:
+
+```bash
+stash datasets config upload --file config/cipherstash/dataset.yml --client-id $CS_CLIENT_ID --client-key $CS_CLIENT_KEY
+```
+
+Restart the services by running the following command:
+
+```bash
+docker compose restart
+```
+
+##### Verifying the setup
+
+You can now use the JavaScript application to query the database and see the decrypted data.
+Navigate to [http://localhost:8080](http://localhost:8080).
+
+You should see the protected, yet decrypted data:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "CJ",
+    "email": "cj@cipherstash.com"
+  },
+  {
+    "id": 2,
+    "name": "Dan",
+    "email": "dan@cipherstash.com"
+  }
+]
+```
+
+If you navigate to [http://localhost:8080/dan](http://localhost:8080/dan), you will see the power of CipherStash Encrypt in action, as the application is executing the following query:
+
+```sql
+SELECT id, name, email FROM users WHERE email LIKE 'dan%';
+```
+
+This query is executed against the encrypted data, and CipherStash Proxy decrypts the data and returns the results.
+
+### Enabling CipherStash Encrypt in your own application
+
+Use the [Getting Started Guide for CipherStash Encrypt](https://cipherstash.com/docs/getting-started/cipherstash-encrypt) to learn how to use CipherStash Encrypt with your own application.
 
 ## Simulating network conditions
 
