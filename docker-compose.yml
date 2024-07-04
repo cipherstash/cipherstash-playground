@@ -7,7 +7,10 @@ services:
       - ./config/cipherstash-proxy.toml:/etc/cipherstash-proxy/cipherstash-proxy.toml
     environment:
       - LOG_LEVEL=debug
-    image: cipherstash/cipherstash-proxy:cipherstash-proxy-v0.0.15
+      - CS_DATABASE__NAME=postgres
+      - CS_DATABASE__USERNAME=postgres
+      - CS_DATABASE__PASSWORD=password
+    image: cipherstash/cipherstash-proxy:cipherstash-proxy-v0.0.18
     labels:
       logging: "promtail"
       logging_jobname: "proxylogs"

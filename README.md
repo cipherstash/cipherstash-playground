@@ -131,6 +131,50 @@ You can use Toxiproxy to simulate network latency, packet loss, and other networ
 CipherStash Proxy is a PostgreSQL pooler and introducting it into your stack can introduce new network conditions that you may not have experienced before.
 Toxiproxy can help you simulate these conditions and test how your application behaves.
 
+
+## Encryption Migration
+
+The CipherStash Encryption Migrator encrypts the data in a table.
+
+Assumes that the table has a corresponding dataset and the columns are configured to be encrypted.
+
+Encryption is handled by CipherStash Proxy.
+
+The "database" connection details need to reference your configured CipherStash Proxy pool
+Reuses `ENV` variable defined for CipherStash Proxy for common configuration.
+
+
+### Example
+To run the migrator on the `users` table for the `name` column:
+
+```
+docker-compose exec cipherstash-proxy cipherstash-migrator users --columns name
+```
+
+### Migrator Options
+
+```
+Arguments:
+  <TABLE>
+
+Options:
+  -k, --primary-key <PRIMARY_KEY>  [env: CS_PRIMARY_KEY=] [default: id]
+  -c, --columns <COLUMNS>...       [env: CS_COLUMNS=]
+  -H, --host <HOST>                Host address of CipherStash Proxy instance [env: CS_HOST=] [default: 127.0.0.1]
+  -P, --port <PORT>                Port of CipherStash Proxy instance [env: CS_PORT=6432] [default: 6432]
+  -N, --name <NAME>                Name of CipherStash Proxy pool connected to target database [env: CS_DATABASE__NAME=postgres]
+  -U, --username <USERNAME>        [env: CS_USERNAME] [env: CS_DATABASE__USERNAME]
+  -p, --password <PASSWORD>        [env: CS_PASSWORD] [env: CS_DATABASE__PASSWORD]
+  -b, --batch-size <BATCH_SIZE>    [env: CS_BATCH_SIZE=] [default: 100]
+  -d, --dry-run                    Run without update. Data is loaded, but updates are not performed [env: CS_DRY_RUN=]
+  -v, --verbose                    Turn on additional logging output [env: CS_VERBOSE=]
+  -D, --debug                      Turn on debug output [env: CS_DEBUG=]
+  -f, --log-format <LOG_FORMAT>    [env: CS_LOG_FORMAT=] [default: text] [possible values: text, structured]
+  -h, --help                       Print help (see more with '--help')
+  -V, --version                    Print version
+```
+
+
 ## Cleaning up
 
 To stop the playground and remove all containers, run the following command:
@@ -140,3 +184,87 @@ docker compose down
 ```
 
 This will stop and remove all containers, networks, and volumes created by the playground.
+
+
+
+
+
+
+
+
+
+
+
+
+
+pg_dump --host=127.0.0.1 --format=directory --jobs=4 --username postgres --password --column-inserts --table=users --data-only --dbname postgres > users.sql
+
+
+pg_dump --format=directory --jobs=4 --column-inserts --table=users --data-only > users.sql
+
+
+
+
+psql -d encrypted_db -f ./data.sql
+
+
+
+
+
+SELECT * FROM users WHERE id = 1;
+
+INSERT INTO users (name, email) VALUES ('Blah', 'Blah@cipherstash.com');
+
+SELECT name FROM users WHERE id = 101;
+
+
+
+
+
+WORKSPACE_ID=NP7TKR46WUBPFKIR"
+
+
+DATASET_ID=36a48452-a650-494e-a3c1-35cc0c5013ec
+
+CLIENT_ID=50dae1c9-137d-4c2d-82b2-78bf2693c716
+
+CLIENT_KEY=a4627031a16b7065726d75746174696f6e900d0502090c0608030004070f010b0a0e6770325f66726f6da16b7065726d75746174696f6e9000080709030c020f040e060d0a05010b6570325f746fa16b7065726d75746174696f6e90070f09020a010e0603000b0c0405080d627033a16b7065726d75746174696f6e98210405081315181e181f02090c181a0a10181c16000b171406070111181d0e18190f181b0d031820121818
+
+stash datasets create users --description "UAT: users"
+
+
+stash clients create --dataset-id 36a48452-a650-494e-a3c1-35cc0c5013ec "playground"
+
+stash datasets config upload --file /Users/tobyhede/src/cipherstash-proxy-playground/config/dataset.yml --client-id 50dae1c9-137d-4c2d-82b2-78bf2693c716 --client-key a4627031a16b7065726d75746174696f6e900d0502090c0608030004070f010b0a0e6770325f66726f6da16b7065726d75746174696f6e9000080709030c020f040e060d0a05010b6570325f746fa16b7065726d75746174696f6e90070f09020a010e0603000b0c0405080d627033a16b7065726d75746174696f6e98210405081315181e181f02090c181a0a10181c16000b171406070111181d0e18190f181b0d031820121818
+
+
+
+client_id = "998b4119-0626-4c2a-8fc9-8a7dfa931732"
+client_key = "a4627031a16b7065726d75746174696f6e9004050b0a0f08020e0003010c0d0706096770325f66726f6da16b7065726d75746174696f6e90030d0802060c0a09000f0e070504010b6570325f746fa16b7065726d75746174696f6e90070f09020a010e0603000b0c0405080d627033a16b7065726d75746174696f6e98211001181e0e0b121818110f07021513181d181b0517181a03090d14080c18200604181c00181f0a161819"
+
+
+
+stash datasets config upload --file /Users/tobyhede/src/cipherstash-proxy-playground/config/dataset.yml --client-id 998b4119-0626-4c2a-8fc9-8a7dfa931732 --client-key a4627031a16b7065726d75746174696f6e9004050b0a0f08020e0003010c0d0706096770325f66726f6da16b7065726d75746174696f6e90030d0802060c0a09000f0e070504010b6570325f746fa16b7065726d75746174696f6e90070f09020a010e0603000b0c0405080d627033a16b7065726d75746174696f6e98211001181e0e0b121818110f07021513181d181b0517181a03090d14080c18200604181c00181f0a161819
+
+
+
+
+```
+SINGLE COLUMN [JSONB]
+
+
+```
+
+
+docker exec -it 6f0e49683484 "albatross users --columns name email --dry-run --verbose --batch-size 5"
+
+docker exec -it 6f0e49683484 /bin/sh
+
+    - PG_USER=postgres
+      - PG_PASSWORD=password
+      - PG_DATABASE=postgres
+      - PG_HOST=cipherstash-proxy
+      - PG_PORT=6432
+
+
+ docker-compose exec cipherstash-proxy albatross users --columns name email --dry-run --verbose --batch-size 5 --name postgres --username postgres --password password
