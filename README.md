@@ -279,10 +279,10 @@ docker compose restart
 
 #### Step 6: Encrypting data
 
-CipherStash Proxy comes with a helper program called `albatross` that you can use to encrypt data.
+CipherStash Proxy comes with a helper program called `cipherstash-migrator` that you can use to encrypt data.
 
 ```
-docker compose exec cipherstash-proxy albatross users --columns email --verbose --name postgres --username postgres --password password
+docker compose exec cipherstash-proxy cipherstash-migrator users --columns email --verbose --name postgres --username postgres --password password
 ```
 
 This command will encrypt the `email` column in the `users` table.
