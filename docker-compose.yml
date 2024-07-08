@@ -1,13 +1,14 @@
 services:
   cipherstash-proxy:
+    container_name: cipherstash-proxy
     ports:
       - 6432:6432
       - 9930:9930
     volumes:
-      - ./config/cipherstash-proxy.toml:/etc/cipherstash-proxy/cipherstash-proxy.toml
+      - ./config/cipherstash/cipherstash-proxy.toml:/etc/cipherstash-proxy/cipherstash-proxy.toml
     environment:
       - LOG_LEVEL=debug
-    image: cipherstash/cipherstash-proxy:cipherstash-proxy-v0.0.15
+    image: cipherstash/cipherstash-proxy:cipherstash-proxy-v0.0.18
     labels:
       logging: "promtail"
       logging_jobname: "proxylogs"
@@ -18,12 +19,13 @@ services:
       - app
 
   grafana:
+    container_name: grafana
     image: grafana/grafana:latest
     ports:
       - 3000:3000
     volumes:
-      - ./config/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
-      - ./config/dashboards:/var/lib/grafana/dashboards
+      - ./config/grafana/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -33,6 +35,7 @@ services:
       - app
 
   loki:
+    container_name: loki
     image: grafana/loki:latest
     ports:
       - 3100:3100
@@ -41,6 +44,7 @@ services:
       - app
 
   toxiproxy:
+    container_name: toxiproxy
     image: ghcr.io/shopify/toxiproxy:latest
     command: -config toxiproxy.json
     environment:
@@ -49,7 +53,7 @@ services:
       - 5433:5433
       - 8474:8474
     volumes:
-      - ./config/toxiproxy.json:/toxiproxy.json
+      - ./config/toxiproxy/toxiproxy.json:/toxiproxy.json
     depends_on:
       - db
     networks:
@@ -59,7 +63,7 @@ services:
     image: grafana/promtail:latest
     container_name: promtail
     volumes:
-      - ./config/promtail.yaml:/etc/promtail/docker-config.yaml
+      - ./config/promtail/promtail.yaml:/etc/promtail/docker-config.yaml
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock
     command: -config.file=/etc/promtail/docker-config.yaml
@@ -70,10 +74,11 @@ services:
 
   prometheus:
     image: prom/prometheus
+    container_name: prometheus
     ports:
       - 9090:9090
     volumes:
-      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     networks:
       - app
 

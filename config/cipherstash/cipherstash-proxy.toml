@@ -1,0 +1,29 @@
+## For a complete list of configuration options
+## see the documentation at https://cipherstash.com/docs/reference/proxy
+
+## Sign up for an account to create an access key: https://dashboard.cipherstash.com
+# workspace_id = "..."
+# client_access_key = "..."
+
+prometheus_metrics = true
+
+## Uncomment the following block to enable encryption
+## replace client_id and client_key with your values.
+# [encryption]
+# mode = "encrypted"
+# client_id = "client_id"
+# client_key = "client_key"
+
+[audit]
+## If you have a workspace_id and client_access_key
+## set subscriber to "cipherstash" to enable Audit.
+subscriber = "stdout"
+
+[database]
+name = "postgres"
+username = "postgres"
+password = "password"
+## Set host to "db" and port to 5432 to enable the database.
+## Set host to "toxiproxy" and port to 5433 to enable ToxiProxy.
+host = "db"
+port = 5432
