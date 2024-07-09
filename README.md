@@ -27,18 +27,26 @@ This is a playground for CipherStash Proxy. It is a collection of microservices 
 - [Simulating network conditions](#simulating-network-conditions)
 - [Cleaning up](#cleaning-up)
 
-## Getting started
+## Pre-requisites
 
 Make sure that you have Docker installed on your machine. You can download Docker from [here](https://www.docker.com/products/docker-desktop).
-Configure the Proxy config file located at `config/cipherstash-proxy.toml` to your desired configuration, noting that the default configuration is already set up to work with the other services in the playground.
 
-Once you have Docker installed, run the following command to start the playground:
+## Getting started
+
+Clone the repository into a new directory on your local machine.
+
+`git clone git@github.com:cipherstash/cipherstash-proxy-playground.git`
+`cd cipherstash-proxy-playground`
+
+This repository include a pre-configured config file located at `config/cipherstash/cipherstash-proxy.toml` which defines the configuration for the CipherStash Proxy. The definition for the various Docker containers that are used in the playground can be found in `docker-compose.yml`
+
+To deploy the environment run the following command from the  `cipherstash-proxy-playground` directory.
 
 ```bash
 docker compose up
 ```
 
-This will start the following services as individual containers using a shared network, and mapping the necessary ports to your local machine:
+This will pull the container images from DockerHub, start the following services as individual containers using a shared network, and map the necessary ports to your local machine:
 
 - **CipherStash Proxy** - a proxy that sits between your application and your database to monitor and secure your data
 - **PostgreSQL** - a database that stores dummy data
@@ -47,6 +55,8 @@ This will start the following services as individual containers using a shared n
 - **Prometheus** - used for monitoring
 - **Loki** - used for log aggregation
 - **Promtail** - used for log collection
+
+It will take a few minutes for the deployment to complete. When you see ` ` the deployment has completed successfully.
 
 ### Accessing the services
 
