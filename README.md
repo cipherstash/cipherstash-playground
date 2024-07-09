@@ -35,10 +35,10 @@ Make sure that you have Docker installed on your machine. You can download Docke
 
 Clone the repository into a new directory on your local machine.
 
-`git clone git@github.com:cipherstash/cipherstash-proxy-playground.git`
-`cd cipherstash-proxy-playground`
+```git clone git@github.com:cipherstash/cipherstash-proxy-playground.git
+cd cipherstash-proxy-playground```
 
-This repository include a pre-configured config file located at `config/cipherstash/cipherstash-proxy.toml` which defines the configuration for the CipherStash Proxy. The definition for the various Docker containers that are used in the playground can be found in `docker-compose.yml`
+This repository includes a pre-configured config file located at `config/cipherstash/cipherstash-proxy.toml` which defines the configuration for the CipherStash Proxy. The definition for the various Docker containers that are used in the playground can be found in `docker-compose.yml`
 
 To deploy the environment run the following command from the  `cipherstash-proxy-playground` directory.
 
