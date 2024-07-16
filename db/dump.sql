@@ -321,7 +321,7 @@ CREATE OPERATOR CLASS ore_64_8_v1_btree_ops DEFAULT FOR TYPE ore_64_8_v1 USING b
 CREATE TABLE IF NOT EXISTS users (
   "id" INTEGER NOT NULL,
   "name" TEXT NOT NULL,
-  "email" TEXT NOT NULL,
+  "email" TEXT,
   "__email_encrypted" text,
   "__email_ore" public.ore_64_8_v1,
   "__email_match" integer[],
@@ -331,5 +331,11 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Seed
-INSERT INTO users (id, name, email) VALUES ('1', 'CJ', 'cj@cipherstash.com');
-INSERT INTO users (id, name, email) VALUES ('2', 'Dan', 'dan@cipherstash.com');
+INSERT INTO users (id, name, email) VALUES (1, 'Luke', 'luke@datahopper.io');
+INSERT INTO users (id, name, email) VALUES (2, 'Danny', 'danny@datahopper.io');
+INSERT INTO users (id, name, email) VALUES (3, 'John', 'john@doe.com');
+INSERT INTO users (id, name, email) VALUES (4, 'Jane', 'jane@gmail.com');
+INSERT INTO users (id, name, email) VALUES (5, 'Alice', 'alice@datahopper.io');
+INSERT INTO users (id, name, email) VALUES (6, 'Bob', 'bob@bobsburgers.com');
+INSERT INTO users (id, name, email) VALUES (7, 'Eve', 'every@time.com');
+INSERT INTO users (id, name, email) VALUES (8, 'Dave', 'dave@tipper.com');
