@@ -5,7 +5,7 @@ services:
       - 6432:6432
       - 9930:9930
     volumes:
-      - ./config/cipherstash/cipherstash-proxy.custom.toml:/etc/cipherstash-proxy/cipherstash-proxy.toml
+      - ./config/cipherstash/cipherstash-proxy.toml:/etc/cipherstash-proxy/cipherstash-proxy.toml
     environment:
       - LOG_LEVEL=debug
     image: cipherstash/cipherstash-proxy:cipherstash-proxy-v0.0.18
@@ -108,7 +108,7 @@ services:
     build:
       context: ./app
     ports:
-      - 8080:3000
+      - 8080:8080
     environment:
       - PG_USER=postgres
       - PG_PASSWORD=password
