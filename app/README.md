@@ -1,15 +1,15 @@
-# demo
+# CipherStash Playground App
 
-To install dependencies:
+To run the CipherStash Playground App, first install the dependencies:
 
 ```bash
 bun install
 ```
 
-To run:
+Next, run the development server:
 
 ```bash
-bun run index.ts
+bun dev
 ```
 
-This project was created using `bun init` in bun v1.1.9. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+Finally, open [http://localhost:3000](http://localhost:3000) in your browser to view the website.

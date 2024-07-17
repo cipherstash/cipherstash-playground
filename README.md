@@ -6,7 +6,7 @@ This is a playground for CipherStash Proxy. It is a collection of microservices 
 
 - [Getting started](#getting-started)
 - [Grafana dashboards](#grafana-dashboards)
-- [JavaScript application](#javascript-application)
+- [Web application](#web-application)
 - [CipherStash Proxy](#cipherstash-proxy)
   - [Data access events](#data-access-events)
   - [Metrics](#metrics)
@@ -25,6 +25,7 @@ This is a playground for CipherStash Proxy. It is a collection of microservices 
     - [Verifying the setup](#verifying-the-setup)
   - [Enabling CipherStash Encrypt in your own application](#enabling-cipherstash-encrypt-in-your-own-application)
 - [Simulating network conditions](#simulating-network-conditions)
+- [Additional example applications](#additional-example-applications)
 - [Cleaning up](#cleaning-up)
 
 ## Getting started
@@ -38,15 +39,22 @@ Once you have Docker installed, run the following command to start the playgroun
 docker compose up
 ```
 
+Note, the playground is a continuous work in progress so you may need to rebuild the non-published images by running the following command:
+
+```bash
+docker compose up --build
+```
+
 This will start the following services as individual containers using a shared network, and mapping the necessary ports to your local machine:
 
-- **CipherStash Proxy** - a proxy that sits between your application and your database to monitor and secure your data
-- **PostgreSQL** - a database that stores dummy data
-- **JavaScript application** - very light weight application that demonstrates how to use CipherStash Proxy
-- **Grafana** - used for visualizing metrics and logs
-- **Prometheus** - used for monitoring
-- **Loki** - used for log aggregation
-- **Promtail** - used for log collection
+- **CipherStash Proxy** - Database proxy that secures and monitors data access events.
+- **Web application** - [Next.js](https://nextjs.org/) and [Drizzle ORM](https://orm.drizzle.team/) application.
+- **PostgreSQL** - [PostgreSQL](https://www.postgresql.org/) database that stores dummy data
+- **Grafana** - [Grafana](https://grafana.com/) instance for visualizing metrics and logs
+- **Prometheus** - [P8s](https://prometheus.io/) instance for storing metrics
+- **Loki** - Grafana's [Loki](https://grafana.com/oss/loki/) instance for storing logs
+- **Promtail** - Grafana's [Promtail](https://grafana.com/docs/loki/latest/send-data/promtail/) agent for collecting logs
+- **Toxiproxy** - [Toxiproxy](https://github.com/Shopify/toxiproxy) instance for simulating network conditions
 
 ### Accessing the services
 
@@ -54,8 +62,7 @@ Access the services at the following endpoints:
 
 - CipherStash Proxy: `postgres://postgres:password@localhost:6432/postgres`
 - PostgreSQL: `postgres://postgres:password@localhost:5432/postgres`
-- [JavaScript application](http://localhost:8080)
-  - The application responds to GET requests at `/` and triggers a data access event by executing a query against the database.
+- [Web application](http://localhost:8080)
 - [Grafana](http://localhost:3000)
 
 ## Grafana dashboards
@@ -65,24 +72,18 @@ The playground comes with a pre-configured Grafana dashboard that shows the foll
 - Data access events which are logged to Loki
 - Various metrics from the CipherStash Proxy
 
-## JavaScript application
+## Web application
 
-The JavaScript application is a very simple application that demonstrates how to use the CipherStash Proxy.
-It is a simple HTTP server that responds to GET requests at `/` and triggers a data access event by executing a query against the database.
+Accessible at [http://localhost:8080](http://localhost:8080).
 
-```sql
-SELECT id, name, email FROM users;
-```
+The web application is a Next.js application that uses Server Side Rendered (SSR) components with the Drizzle ORM to query the database.
+The application highlights the underlying SQL queries that are executed when you interact with the application.
 
-The application is configured to connect to Postgres, just like any other application would, but instead of connecting directly to the database, it connects to CipherStash Proxy.
+`app/src/lib/db.mjs` contains the database connection configuration, and is set up to connect to the CipherStash Proxy by default.
 
 ```javascript
 const client = new Client({
-  user: "postgres",
-  password: "password",
-  host: "cipherstash-proxy",
-  port: 6432,
-  database: "postgres",
+  connectionString: `postgres://${username}:${password}@${host}:${port}/${database}`,
 });
 ```
 
@@ -364,6 +365,14 @@ You can use Toxiproxy to simulate network latency, packet loss, and other networ
 
 CipherStash Proxy is a PostgreSQL pooler and introducting it into your stack can introduce new network conditions that you may not have experienced before.
 Toxiproxy can help you simulate these conditions and test how your application behaves.
+
+## Additional example applications
+
+The playground repo includes a variety of example applications that demonstrate how to use CipherStash Proxy with different technologies.
+
+- **REST API Example** - [Elysia](https://elysiajs.com/) REST API example.
+
+If you have an example application that you would like to add to the playground, please open a pull request!
 
 ## Cleaning up
 
