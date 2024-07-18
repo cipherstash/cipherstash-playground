@@ -1,2 +1,5 @@
 cipherstash-proxy.custom.toml
 .DS_Store
+
+# Temporary until this is better implemented
+k8s

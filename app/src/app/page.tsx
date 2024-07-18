@@ -1,10 +1,14 @@
+import Search from '@/components/Search'
 import { Badge } from '@/components/badge'
 import { Divider } from '@/components/divider'
 import { Heading, Subheading } from '@/components/heading'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/table'
 import { db } from '@/lib/db.mjs'
 import { users } from '@/lib/schema'
-import { asc, like } from 'drizzle-orm'
+import { asc, eq, like } from 'drizzle-orm'
+
+// This is a demo page so we want to force dynamic rendering
+export const dynamic = 'force-dynamic'
 
 function Stat({ title, value, change }: { title: string; value: string; change?: string }) {
   return (
@@ -21,19 +25,32 @@ function Stat({ title, value, change }: { title: string; value: string; change?:
   )
 }
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: {
+    email: string
+  }
+}) {
   const userData = await db.select().from(users).orderBy(asc(users.email))
   const adminData = await db.select().from(users).where(like(users.email, '%datahopper.io'))
+  const foundUser = await db.select().from(users).where(eq(users.email, searchParams.email))
 
   return (
     <>
       <Heading>Good afternoon</Heading>
       <div className="mt-8 flex items-end justify-between">
         <Subheading>Overview</Subheading>
+        <Search email={searchParams.email} />
       </div>
       <div className="mt-4 grid gap-8 sm:grid-cols-2 xl:grid-cols-4">
         <Stat title="Total users" value={String(userData.length)} />
         <Stat title="Admin users" value={String(adminData.length)} change="WHERE email LIKE '%datahopper.io'" />
+        <Stat
+          title="User found"
+          value={foundUser.length ? 'Yes' : 'No'}
+          change={`WHERE email = '${searchParams.email}'`}
+        />
       </div>
       <Subheading className="mt-14">Users ordered by email</Subheading>
       <Badge className="mt-4 text-sm/6" color="lime">
