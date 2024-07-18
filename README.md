@@ -7,6 +7,7 @@ This is a playground for CipherStash Proxy. It is a collection of microservices 
 - [Getting started](#getting-started)
 - [Grafana dashboards](#grafana-dashboards)
 - [Web application](#web-application)
+  - [Query examples](#query-examples)
 - [CipherStash Proxy](#cipherstash-proxy)
   - [Data access events](#data-access-events)
   - [Metrics](#metrics)
@@ -86,6 +87,31 @@ const client = new Client({
   connectionString: `postgres://${username}:${password}@${host}:${port}/${database}`,
 });
 ```
+
+### Query examples
+
+The web application demonstrates the following queries:
+
+1. Fetch all users and order by their email in ascending order:
+
+```sql
+SELECT id, name, email FROM users ORDER BY email ASC;
+```
+
+2. Fetch all users with the email like `%datahopper.io`:
+
+```sql
+SELECT id, name, email FROM users WHERE email LIKE '%datahopper.io';
+```
+
+3. Fetch a specific user by their email, based on the search query:
+
+```sql
+SELECT id, name, email FROM users WHERE email = $1;
+```
+
+The above queries were selected to demonstrate the of the CipherStash searchable encryption.
+To enable searchable encryption, follow the steps in the [Using CipherStash Encrypt](#using-cipherstash-encrypt) section.
 
 ## CipherStash Proxy
 
