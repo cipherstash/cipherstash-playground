@@ -1,0 +1,8 @@
+export CS_WORKSPACE_ID=<your workspace ID>
+export CS_CLIENT_ACCESS_KEY=<your client access key>
+export CS_CLIENT_ID=<your client ID>
+export CS_CLIENT_KEY=<your client key>
+export CS_VITUR_IDP_HOST=<your vitur IDP host>
+export AWS_ACCESS_KEY_ID=local
+export AWS_SECRET_ACCESS_KEY=local
+export AWS_DEFAULT_REGION=us-east-1

@@ -3,3 +3,7 @@ cipherstash-proxy.custom.toml
 
 # Temporary until this is better implemented
 k8s
+
+.envrc
+
+dynamodb/app/target
