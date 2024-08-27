@@ -8,12 +8,21 @@ CipherStash for DynamoDB is a simple interface for storing and retrieving encryp
 - [Supported languages](#supported-languages)
   - [Requesting new language support](#requesting-new-language-support)
 - [Prerequisites](#prerequisites)
+  - [Step 1 - Create a CipherStash account](#step-1---create-a-cipherstash-account)
+  - [Step 2 - Install the CLI](#step-2---install-the-cli)
+  - [Step 3 - Create a dataset and client key](#step-3---create-a-dataset-and-client-key)
+  - [Step 4 - Init ZeroKMS](#step-4---init-zerokms)
+  - [Step 5 - Setting the environment variables](#step-5---setting-the-environment-variables)
+    - [Set the environment variables](#set-the-environment-variables)
 - [Getting started with the playground](#getting-started-with-the-playground)
-- [Integrating the SDK](#integrating-the-sdk)
-  - [Dependencies](#dependencies)
-  - [Defining a table struct](#defining-a-table-struct)
-  - [Querying the table](#querying-the-table)
-- [Running the application](#running-the-application)
+  - [Running the application](#running-the-application)
+- [Integrating in your application](#integrating-in-your-application)
+  - [Configuring a table](#configuring-a-table)
+  - [Integrating the SDK in app](#integrating-the-sdk-in-app)
+    - [Dependencies](#dependencies)
+    - [Defining a table struct](#defining-a-table-struct)
+    - [Querying and searching the table](#querying-and-searching-the-table)
+- [Support](#support)
 
 ## Supported languages
 
@@ -99,10 +108,12 @@ For production use, you should use a tool like [AWS Secrets Manager](https://aws
 
 ## Getting started with the playground
 
-Make sure that you have Docker installed on your machine.
-You can download Docker from [here](https://www.docker.com/products/docker-desktop).
+Make sure that you have the following installed on your machine:
 
-Once you have Docker installed, run the following command to start the playground:
+- [Docker](https://www.docker.com/products/docker-desktop)
+- [Rust](https://www.rust-lang.org/tools/install)
+
+Once you have the dependencies installed, run the following command to start the playground:
 
 ```bash
 docker compose up --build
@@ -111,7 +122,40 @@ docker compose up --build
 This will create a local DynamoDB instance and initialize a `users` table.
 You will also be able to access the DynamoDB Admin UI at [http://localhost:8001](http://localhost:8001).
 
-### Tables
+### Running the application
+
+> **Note:** The following assumes that you've already completed the [Prerequisites](#prerequisites) section, and started the local DynamoDB instance.
+
+To run the application, navigate to the `app` directory and run the following command:
+
+```bash
+cd app
+cargo run
+```
+
+This will start the application, delete the `cool@dude.com` record, create a new record, search for the record by email, and print the result.
+You should see the following output:
+
+```bash
+Running `target/debug/app`
+INFO Initializing...
+INFO Fetching dataset config...
+INFO Ready!
+[src/main.rs:34:5] user = Some(
+    User {
+        email: "cool@dude.com",
+        name: "Cool dude",
+        count: 100,
+    },
+)
+```
+
+The above example shows how to initialize a table, create a record, and query the table for a specific record.
+The data in the table is encrypted and searchable, which you can validate by exploring the DynamoDB Admin UI at [http://localhost:8001](http://localhost:8001).
+
+## Integrating in your application
+
+### Configuring a table
 
 Any table that you want to use with CipherStash for DynamoDB must have the following attributes:
 
@@ -121,7 +165,7 @@ Any table that you want to use with CipherStash for DynamoDB must have the follo
 
 CipherStash for DynamoDB also expects a Global Secondary Index called **TermIndex** to exist if you want to search and query against records.
 
-This is the create table command we used to initialize the `users` table for the playground:
+This is the create table command we used to initialize the `users` table for the playground.
 
 ```bash
 aws dynamodb create-table \
@@ -138,14 +182,12 @@ aws dynamodb create-table \
   --global-secondary-indexes "IndexName=TermIndex,KeySchema=[{AttributeName=term,KeyType=HASH}],Projection={ProjectionType=ALL},ProvisionedThroughput={ReadCapacityUnits=5,WriteCapacityUnits=5}"
 ```
 
-## Integrating the SDK
+### Integrating the SDK in app
 
-> **Note:** The example below is written in Rust, and you can find the crate [here](https://crates.io/crates/cipherstash_dynamodb).
+> **Note:** The instructions below are written in Rust, and you can find the crate [here](https://crates.io/crates/cipherstash_dynamodb).
 > We are working on additional language support, and we will update this section as we add more languages.
 
-We've included a simple example application that demonstrates how to use CipherStash for DynamoDB in the `app` directory.
-
-### Dependencies
+#### Dependencies
 
 We publish a crate to [Cloudsmith](https://cloudsmith.io), which you'll need to configure in your `.cargo/config.toml` file to install the crate:
 
@@ -167,7 +209,9 @@ You can also add the crate to your `Cargo.toml` file:
 cipherstash-dynamodb = { version = "0.4.0", registry = "cipherstash-cipherstash" }
 ```
 
-### Defining a table struct
+The example application has already included the `cipherstash-dynamodb` crate in its `Cargo.toml` file.
+
+#### Defining a table struct
 
 The first step is to define a struct that represents the table you want to store in DynamoDB.
 For the playground, we have defined a struct called `User` that represents a user in our application, and have configured a few attributes to be encrypted and searchable.
@@ -205,12 +249,13 @@ impl User {
 
 You can find more information about the usgae of the `Encryptable` and `Decryptable` traits in the [CipherStash Rust doc](https://cipherstash.com/rustdoc/cipherstash_dynamodb/index.html).
 
-### Querying the table
+#### Querying and searching the table
 
-The playground application is a really simple example that shows how to initialize a table, create a record, and query the table for a specific record.
-The data in the table is encrypted and searchable, which you can validate by exploring the DynamoDB Admin UI at [http://localhost:8001](http://localhost:8001).
+The below example shows the playground application that demonstrates how to initialize a table, create a record, and query the table for a specific record.
 
 ```rust
+...
+let client = aws_sdk_dynamodb::Client::new(&config);
 let table = EncryptedTable::init(client, "users").await?;
 
 // clean up the cool dude
@@ -218,38 +263,22 @@ table.delete::<User>("cool@dude.com").await?;
 
 // create a cool dude
 table
-    .put(User::new("cool@dude.com", "Cool dude"))
-    .await?;
+  .put(User::new("cool@dude.com", "Cool dude"))
+  .await?;
 
 // get the cool dude
 let user: Option<User> = table.get("cool@dude.com").await?;
 
 // print the cool dude
 dbg!(user);
+...
 ```
 
 You can see the full example in the `app/src/main.rs` file.
 
-## Running the application
+## Support
 
-To run the application, navigate to the `app` directory and run the following command:
+If you are interested in CipherStash for DynamoDB, or have any questions use the following channels:
 
-```bash
-cargo run
-```
-
-This will start the application and you should see the following output:
-
-```bash
-Running `target/debug/app`
-INFO Initializing...
-INFO Fetching dataset config...
-INFO Ready!
-[src/main.rs:34:5] user = Some(
-    User {
-        email: "cool@dude.com",
-        name: "Cool dude",
-        count: 100,
-    },
-)
-```
+- [Discussing with the community](https://github.com/cipherstash/cipherstash-playground/discussions)
+- [Scheduling a discovery call with the CipherStash team](https://calendly.com/cipherstash/discovery-call)
