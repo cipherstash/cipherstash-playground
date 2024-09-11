@@ -1,0 +1,47 @@
+services:
+  dynamodb:
+    container_name: dynamodb
+    build:
+      context: ./dynamodb
+    ports:
+      - 8000:8000
+    volumes:
+      - ./dynamodb/data:/data
+    environment:
+      - AWS_ACCESS_KEY_ID=local
+      - AWS_SECRET_ACCESS_KEY=local
+      - AWS_DEFAULT_REGION=us-east-1
+    networks:
+      - app
+  
+  dynamodb-admin:
+    container_name: dynamodb-admin
+    image: aaronshaf/dynamodb-admin
+    ports:
+      - 8001:8001
+    environment:
+      DYNAMO_ENDPOINT: http://dynamodb:8000
+    networks:
+      - app
+    depends_on:
+      - dynamodb
+
+  app:
+    container_name: app
+    build:
+      context: ./app
+    environment:
+      - AWS_ACCESS_KEY_ID=local
+      - AWS_SECRET_ACCESS_KEY=local
+      - AWS_DEFAULT_REGION=us-east-1
+      - CS_WORKSPACE_ID=fill-in-your-workspace-id
+      - CS_CLIENT_ACCESS_KEY=fill-in-your-client-access-key
+      - CS_CLIENT_ID=fill-in-your-client-id
+      - CS_CLIENT_KEY=fill-in-your-client-key
+      - CS_VITUR_IDP_HOST=https://ap-southeast-2.aws.auth.viturhosted.net
+    depends_on:
+      - dynamodb
+
+networks:
+  app:
+    name: app
