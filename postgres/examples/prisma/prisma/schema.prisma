@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String       @id @default(uuid())
+  firstName          String?
+  lastName           String?
+  email              String       @unique
+  password           String
+  status             UserStatus   @default(active)
+  phone              String?
+  gender             String?
+  bio                String?
+  profilePicUrl      String?
+  createdAt          DateTime     @default(now())
+  verifiedAt         DateTime?
+  updatedAt          DateTime     @updatedAt
+  deletedAt          DateTime?
+  roles              Role[]       @relation("UserRoles")
+  images             File[]
+  jobs               Job[]
+  collections        Collection[]
+  createdFiles       File[]       @relation("FileCreator")
+  createdCollections Collection[] @relation("CollectionCreator")
+  usages             Usage[]
+
+  @@index([email])
+}
+
+model Role {
+  id    String @id @default(uuid())
+  name  String @unique
+  users User[] @relation("UserRoles")
+}
+
+enum JobStatus {
+  completed
+  progress
+  failed
+  active
+}
+
+enum UserStatus {
+  active
+  inactive
+  suspended
+}
+
+model Job {
+  id        String    @id
+  name      String
+  status    JobStatus @default(active)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  images    File[]
+
+  @@index([status])
+  @@index([userId])
+}
+
+model File {
+  id          String                       @id @default(uuid())
+  name        String
+  mimeType    String
+  title       String?
+  description String?
+  path        String
+  processed   Boolean                      @default(false)
+  createdAt   DateTime                     @default(now())
+  updatedAt   DateTime                     @updatedAt
+  deletedAt   DateTime?
+  jobId       String?
+  job         Job?                         @relation(fields: [jobId], references: [id])
+  userId      String
+  user        User                         @relation(fields: [userId], references: [id])
+  createdBy   String
+  creator     User                         @relation("FileCreator", fields: [createdBy], references: [id])
+  embedding   Unsupported("vector(1536)")?
+  collections Collection[]                 @relation("FileCollections")
+  blurHash    String?
+  size        BigInt?
+  hash        String?                      @unique // New field for file content hash
+
+  @@index([processed])
+  @@index([userId])
+  @@index([jobId])
+  @@index([createdBy])
+  @@index([hash]) // New index for faster lookups
+}
+
+model Collection {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  createdBy   String
+  creator     User      @relation("CollectionCreator", fields: [createdBy], references: [id])
+  files       File[]    @relation("FileCollections")
+
+  @@index([userId])
+  @@index([createdBy])
+}
+
+enum UsageType {
+  search
+  upload
+}
+
+model Usage {
+  id        String    @id @default(uuid())
+  type      UsageType @default(search)
+  query     String?
+  count     Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  createdBy String
+  user      User      @relation(fields: [createdBy], references: [id])
+
+  @@index([createdBy])
+  @@index([type])
+}
